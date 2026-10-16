@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AQUILA MECHANICA — An Anatomical Flight Automaton</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <!-- 3D Viewport Container -->
+  <div id="canvas-container"></div>
+
+  <!-- 2D Projected SVG/HTML Label Overlay for Hover & Inspection Callouts -->
+  <div id="labels-layer" aria-hidden="true">
+    <svg id="leader-svg" width="100%" height="100%">
+      <line id="hover-leader-line" x1="0" y1="0" x2="0" y2="0" />
+      <circle id="hover-leader-dot" cx="0" cy="0" r="3" />
+      <line id="active-leader-line" x1="0" y1="0" x2="0" y2="0" />
+      <circle id="active-leader-dot" cx="0" cy="0" r="3.5" />
+    </svg>
+    <div id="hover-label" class="callout-pill hidden">
+      <span class="callout-code" id="hover-label-code">SYS-01</span>
+      <span class="callout-title" id="hover-label-text">Component</span>
+    </div>
+  </div>
+
+  <!-- Exhibition UI Overlay -->
+  <div id="ui-layer">
+    <!-- Top Museum Header -->
+    <header id="exhibition-header">
+      <div class="brand-block">
+        <div class="specimen-tag">SPECIMEN NO. AM-1788 · AQUILA CHRYSAETOS</div>
+        <h1 class="main-title">AQUILA MECHANICA</h1>
+        <p class="sub-title">AN ANATOMICAL FLIGHT AUTOMATON</p>
+      </div>
+
+      <!-- Primary Interaction Mode Selector -->
+      <nav id="mode-nav" aria-label="Exhibition Modes">
+        <button class="mode-btn active" data-mode="OBSERVE">OBSERVE</button>
+        <span class="mode-sep">·</span>
+        <button class="mode-btn" data-mode="FLIGHT">FLIGHT</button>
+        <span class="mode-sep">·</span>
+        <button class="mode-btn" data-mode="EXPLODED">EXPLODED</button>
+        <span class="mode-sep">·</span>
+        <button class="mode-btn" data-mode="ANATOMY">ANATOMY</button>
+        <span class="mode-sep">·</span>
+        <button class="mode-btn" data-mode="SLOW_MOTION">SLOW MOTION</button>
+      </nav>
+
+      <!-- Right Utility Actions -->
+      <div class="header-actions">
+        <button id="btn-signature" class="action-pill signature-btn" title="Trigger Signature Mechanical Sequence">
+          <span class="amber-dot"></span> SIGNATURE SEQUENCE
+        </button>
+        <button id="btn-stabilize" class="action-pill" title="Demonstrate Cervical Head Stabilization">
+          STABILIZATION TEST
+        </button>
+        <button id="btn-audio" class="action-pill icon-pill" title="Toggle Subtle Clockwork Audio">
+          <span id="audio-indicator">AUDIO: MUTE</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Sub-Controls Bar (Flight States & Exploded Slider) -->
+    <div id="subcontrols-container">
+      <!-- Flight State Selector -->
+      <div id="flight-subcontrols" class="subcontrol-panel hidden">
+        <span class="subcontrol-label">FLIGHT REGIME</span>
+        <div class="subcontrol-group">
+          <button class="sub-btn" data-flight="IDLE">IDLE PERCH</button>
+          <button class="sub-btn" data-flight="GLIDE">THERMAL GLIDE</button>
+          <button class="sub-btn active" data-flight="CRUISE">CRUISE FLIGHT</button>
+          <button class="sub-btn" data-flight="POWER">POWER STROKE</button>
+          <button class="sub-btn" data-flight="LANDING">LANDING</button>
+          <button class="sub-btn" data-flight="TAKEOFF">TAKEOFF</button>
+        </div>
+      </div>
+
+      <!-- Exploded View Slider -->
+      <div id="exploded-subcontrols" class="subcontrol-panel hidden">
+        <div class="slider-header">
+          <span class="subcontrol-label">ASSEMBLY DISPLACEMENT</span>
+          <span id="exploded-stage-desc" class="stage-readout">0% — ASSEMBLED SPECIMEN</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-bound">0</span>
+          <input type="range" id="exploded-slider" min="0" max="100" step="0.5" value="0" />
+          <span class="slider-bound">100</span>
+        </div>
+        <div class="preset-row">
+          <button class="preset-chip" data-explode="0">Assembled (0)</button>
+          <button class="preset-chip" data-explode="30">Plumage &amp; Coverts (30)</button>
+          <button class="preset-chip" data-explode="65">Skeletal &amp; Wing Spars (65)</button>
+          <button class="preset-chip" data-explode="100">Full Core &amp; Optics (100)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technical Information Panel (Museum Specimen Card) -->
+    <aside id="technical-panel" class="hidden" aria-live="polite">
+      <div class="panel-top-bar">
+        <span id="panel-code" class="panel-index">SYS-01 / 22</span>
+        <div class="panel-nav-btns">
+          <button id="panel-prev" class="mini-nav-btn" title="Previous Mechanism">&#8592;</button>
+          <button id="panel-next" class="mini-nav-btn" title="Next Mechanism">&#8594;</button>
+          <button id="panel-close" class="mini-nav-btn close-btn" title="Return to Full View">&times;</button>
+        </div>
+      </div>
+
+      <h2 id="panel-title" class="panel-component-name">FURCULAR ENERGY SPRING</h2>
+      <div class="panel-divider"></div>
+
+      <dl class="spec-list">
+        <div class="spec-item">
+          <dt>Biological analogue</dt>
+          <dd id="panel-analogue">Furcula / wishbone</dd>
+        </div>
+        <div class="spec-item">
+          <dt>Mechanical interpretation</dt>
+          <dd id="panel-interpretation">Laminated gold-steel spring assembly</dd>
+        </div>
+        <div class="spec-item">
+          <dt>Function</dt>
+          <dd id="panel-function">Stores and returns elastic energy while stabilizing shoulder loads during wingbeats.</dd>
+        </div>
+        <div class="spec-item">
+          <dt>Material</dt>
+          <dd id="panel-material">Pale gold outer laminate / spring-steel core / ivory porcelain bosses</dd>
+        </div>
+        <div class="spec-item">
+          <dt>Motion</dt>
+          <dd id="panel-motion">Cyclic elastic flexion</dd>
+        </div>
+      </dl>
+
+      <div class="panel-footer">
+        <button id="btn-reset-camera" class="panel-action-btn">RESTORE OVERVIEW CAMERA</button>
+      </div>
+    </aside>
+
+    <!-- Bottom Exhibition Telemetry & Component Index Strip -->
+    <footer id="exhibition-footer">
+      <div class="telemetry-strip">
+        <div class="telemetry-item">
+          <span class="tel-label">CORE ESCAPEMENT</span>
+          <span class="tel-val" id="tel-rpm">142 RPM</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="tel-label">FURCULA STRAIN</span>
+          <span class="tel-val" id="tel-strain">0.4°</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="tel-label">WINGSPAN ARTICULATION</span>
+          <span class="tel-val" id="tel-span">72%</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="tel-label">CERVICAL GYRO LOCK</span>
+          <span class="tel-val" id="tel-gyro">ACTIVE</span>
+        </div>
+      </div>
+
+      <div class="interaction-hint">
+        <span>DRAG TO ORBIT</span>
+        <span class="dot-sep">·</span>
+        <span>SCROLL TO ZOOM</span>
+        <span class="dot-sep">·</span>
+        <span>CLICK ANY MECHANISM TO INSPECT</span>
+      </div>
+
+      <div class="quick-index-wrapper">
+        <button id="btn-toggle-index" class="action-pill">SYSTEMS INDEX (22)</button>
+      </div>
+    </footer>
+
+    <!-- Expandable Systems Drawer for Direct Component Selection -->
+    <div id="systems-drawer" class="hidden">
+      <div class="drawer-header">
+        <span>ANATOMICAL &amp; MECHANICAL SYSTEMS CATALOG</span>
+        <button id="drawer-close" class="mini-nav-btn">&times;</button>
+      </div>
+      <div id="systems-grid" class="systems-grid"></div>
+    </div>
+  </div>
+
+  <!-- Initial Exhibition Loading / Awakening Curtain -->
+  <div id="loading-curtain">
+    <div class="curtain-inner">
+      <div class="curtain-emblem">
+        <div class="curtain-ring"></div>
+        <div class="curtain-core"></div>
+      </div>
+      <div class="curtain-title">AQUILA MECHANICA</div>
+      <div class="curtain-status" id="loading-status">CALIBRATING OPTICAL &amp; FLIGHT TRANSMISSIONS...</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
